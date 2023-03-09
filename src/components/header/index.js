@@ -9,11 +9,13 @@ export function Header() {
   return (
     <div className={openMobNav ? "navbar open" : "navbar"}>
       <div className="logo">
-        <a href="#home">Image Link</a>
+        <a href="/">Image Link</a>
       </div>
-      {false && <div className="burger" onClick={handleBurgerClick}>
-        burger
-      </div>}
+      {false && (
+        <div className="burger" onClick={handleBurgerClick}>
+          burger
+        </div>
+      )}
       {/* <div className="navLinks" onClick={handleBurgerClick}>
         <ul>
          

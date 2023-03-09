@@ -5,14 +5,89 @@ import { v4 } from "uuid";
 import { Gallery } from "../../components/gallery";
 import { getFileName } from "../../helper/getFileName";
 import { Spinner } from "../../components/spinner";
+import { explorer } from "./../../data/folderData";
 
 function Home() {
   const [uploadImage, setUploadImage] = useState(null);
-  const [folder, setFolder] = useState("images");
+  const [folder, setFolder] = useState("");
   const [galleryLoader, setGalleryLoader] = useState(false);
   const [uploadBtn, setUploadBtn] = useState(true);
   const [images, setImages] = useState([]);
   const [imageListRef, setImageListRef] = useState(ref(storage, `${folder}/`));
+
+  const Folderss = ({ explorer }) => {
+    const [expand, setExpand] = useState(false);
+    useEffect(() => {
+      if( explorer.name === 'root'){
+        setExpand(true);
+      }
+      if( explorer.name === folder){
+        setExpand(true);
+      }
+    },[explorer.name] );
+    return (
+      <>
+        {explorer.isFolder ? (
+          <div style={{}}>
+            <div
+              href={explorer.link}
+              title={explorer.name}
+              onClick={() => setExpand(!expand)}
+              style={{
+                display: "flex",
+                fontSize: "14px",
+                justifyContent: "space-between",
+                width: "120px",
+                cursor: "pointer",
+                background: "gray",
+                color: "white",
+                margin: 4,
+                padding: "4px",
+                borderRadius: 4,
+              }}>
+              {" "}
+              <span> {expand  ? `👇 ${explorer.name}` : `👉 ${explorer.name}`}</span>
+              <button>➕</button>
+            </div>
+            <div>
+              {explorer?.children?.map((exp) => (
+                <div
+                  key={exp.id}
+                  style={{
+                    display: `${expand  ? "flex" : "none"}`,
+                    paddingLeft: "16px",
+                    cursor: "pointer",
+                  }}>
+                  <Folderss explorer={exp} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div
+            title={explorer.name}
+            style={{
+              width: "120px",
+              fontSize: "14px",
+              cursor: "pointer",
+              background: "gray",
+              color: "white",
+              margin: 4,
+              padding: "4px",
+              borderRadius: 4,
+            }}
+            onClick={(e) => {
+              setImageListRef(ref(storage, `${explorer.name}/`));
+              setFolder(`${explorer.name}`);
+            }}>
+            {" "}
+            <span>📄 {explorer.name}</span>
+          </div>
+        )}
+      </>
+    );
+  };
+
   const handleUpload = () => {
     if (uploadImage === null) {
       alert("Please select an image");
@@ -46,6 +121,9 @@ function Home() {
   };
 
   useEffect(() => {
+    if(folder === ""){
+      return;
+    }
     setGalleryLoader(true);
     setImages([]);
     listAll(imageListRef).then((response) => {
@@ -87,51 +165,50 @@ function Home() {
   }, [imageListRef]);
 
   return (
-    <div className="app__container">
-      <div className="upload__file">
-        <label htmlFor="upload-image" className="upload__label">
-          {uploadImage ? uploadImage.name : "Choose Image"}
-        </label>
-        <input
-          className="upload-image"
-          id="upload-image"
-          style={{ display: "none" }}
-          type="file"
-          onChange={(e) => setUploadImage(e.target.files[0])}
-          title="Choose Image"
-          aria-label="Choose Image"
-        />
-      </div>
+    <>
+      <Folderss explorer={explorer} />
+     {folder !== '' ? <div className="app__container">
+        <div className="upload__file">
+          <label htmlFor="upload-image" className="upload__label">
+            {uploadImage ? uploadImage.name : "Choose Image"}
+          </label>
+          <input
+            className="upload-image"
+            id="upload-image"
+            style={{ display: "none" }}
+            type="file"
+            onChange={(e) => setUploadImage(e.target.files[0])}
+            title="Choose Image"
+            aria-label="Choose Image"
+          />
+        </div>
 
-      <div>
-        {uploadBtn ? (
-          <button className="button" onClick={handleUpload}>
-            Uplaod Image
-          </button>
-        ) : (
-          <button className="disButton">
-            <Spinner color="#ffffff" size={20} type="BarLoader" />
-          </button>
-        )}
-      </div>
-      <div>
-        <select
-          className="select"
-          value={folder}
-          onChange={(e) => {
-            setImageListRef(ref(storage, `${e.target.value}/`));
-            setFolder(`${e.target.value}`);
-          }}>
-          <option value="images">images</option>
-          <option value="photo">photo</option>
-        </select>
-      </div>
-      {!galleryLoader ? (
-        <Gallery images={images} />
-      ) : (
-        null
-      )}
-    </div>
+        <div>
+          {uploadBtn ? (
+            <button className="button" onClick={handleUpload}>
+              Uplaod Image
+            </button>
+          ) : (
+            <button className="disButton">
+              <Spinner color="#ffffff" size={20} type="BarLoader" />
+            </button>
+          )}
+        </div>
+        {/* <div>
+          <select
+            className="select"
+            value={folder}
+            onChange={(e) => {
+              setImageListRef(ref(storage, `${e.target.value}/`));
+              setFolder(`${e.target.value}`);
+            }}>
+            <option value="images">images</option>
+            <option value="photo">photo</option>
+          </select>
+        </div> */}
+        {!galleryLoader ? <Gallery images={images} /> : null}
+      </div>: <div className="app__container">Please select a file</div>}
+    </>
   );
 }
 

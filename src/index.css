@@ -26,9 +26,8 @@ code {
 
 .App {
   display: flex;
-  padding: 12vh 60px 20px 60px;
-  justify-content: center;
-  align-items: center;
+  padding: 12vh 20px 20px 20px;
+  transition: all 300ms ease-in-out;
 }
 
 .app__container {
@@ -36,7 +35,7 @@ code {
   flex-direction: column;
   gap: 20px;
   padding: 0 20px;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 img {
@@ -123,8 +122,8 @@ hr {
 
 .download__btn,
 .copy__btn {
-  background-color: rgb(29, 31, 29,0.65);
-  
+  background-color: rgb(29, 31, 29, 0.65);
+
   color: var(--white);
   width: 40px;
   height: 30px;
@@ -141,11 +140,13 @@ hr {
 }
 
 .download__btn:hover,
-.copy__btn:hover,.download__btn:active, .copy__btn:active {
+.copy__btn:hover,
+.download__btn:active,
+.copy__btn:active {
   transform: scale(1.1);
 }
 
-.image__opt{
+.image__opt {
   display: flex;
   position: absolute;
   justify-content: center;
@@ -153,7 +154,7 @@ hr {
   top: 0;
   right: 0;
   margin: 8px;
-  background-color: rgb(29, 31, 29,0.65);
+  background-color: rgb(29, 31, 29, 0.65);
   color: var(--white);
   width: 40px;
   height: 30px;
